@@ -1,0 +1,47 @@
+{
+  "manifest_version": 3,
+  "name": "Seedance 2.0助手5.0.46_ANDREAM",
+  "version": "5.0.46",
+  "description": "Seedance 2.0 helper with task queue execution, page automation, and concurrency monitoring.",
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "permissions": [
+    "scripting",
+    "tabs",
+    "storage",
+    "alarms"
+  ],
+  "host_permissions": [
+    "https://jimeng.jianying.com/*",
+    "https://*.jimeng.jianying.com/*"
+  ],
+  "action": {
+    "default_title": "Seedance 2.0助手5.0.46_ANDREAM",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://jimeng.jianying.com/*",
+        "https://*.jimeng.jianying.com/*"
+      ],
+      "js": [
+        "net-hook.js"
+      ],
+      "run_at": "document_start",
+      "world": "MAIN"
+    }
+  ]
+}

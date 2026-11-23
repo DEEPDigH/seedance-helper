@@ -1,0 +1,466 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Seedance 2.0助手5.0.46_ANDREAM</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/icon32.png" />
+  <link rel="stylesheet" href="vendor/codemirror/codemirror.css" />
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <div class="wrap app-redesign">
+    <h1><span class="brand-mark">S2</span>Seedance 2.0助手</h1>
+
+    <div id="coreFeatureArea">
+      <div class="layout-shell redesign-shell">
+        <div class="main-column control-column">
+          <section class="workspace2 project-queue-panel compact-card">
+            <div class="section-title-row">
+              <h2>项目队列</h2>
+              <button id="openProjectManager" class="project-manager-open" type="button">项目管理</button>
+            </div>
+            <div class="project-manager">
+              <div class="project-manager-head">
+                <div class="project-manager-title">
+                  <span>当前项目</span>
+                  <strong id="activeProjectName">默认项目</strong>
+                </div>
+              </div>
+              <div class="project-create">
+                <input id="projectNameInput" type="text" maxlength="28" placeholder="输入项目名称" />
+                <button id="createProjectBtn" type="button">创建项目</button>
+              </div>
+              <div id="projectList" class="project-list" aria-label="项目队列列表"></div>
+            </div>
+          </section>
+
+          <section class="control-panel compact-card">
+            <div class="section-title-row">
+              <h2>同步与执行</h2>
+              <span>提交前可单项同步到即梦</span>
+            </div>
+
+            <div class="btn-grid compact step-strip">
+              <button data-step="genMode">同步创作</button>
+              <button data-step="model">同步模型</button>
+              <button data-step="refMode">同步参考</button>
+              <button data-step="ratio">同步比例</button>
+              <button data-step="duration">同步时长</button>
+              <button data-step="submit">提交生成</button>
+            </div>
+
+            <div class="log-resizable">
+              <pre id="log">等待执行...</pre>
+            </div>
+          </section>
+
+        </div>
+
+        <div class="right-column queue-column">
+          <section class="workspace3 current-project-panel compact-card">
+            <div class="workspace3-header">
+              <div class="workspace3-title-block">
+                <h2 id="queueTitle">默认项目</h2>
+                <div class="queue-status-summary" id="queueStatusSummary">
+                  <div class="queue-status-row">
+                    <span class="queue-status-label">当前项目</span>
+                    <span class="queue-status-chip">排队中 <strong id="queueCurrentPending">0</strong></span>
+                    <span class="queue-status-chip danger">失败 <strong id="queueCurrentFailed">0</strong></span>
+                    <span class="queue-status-chip muted">已跳过 <strong id="queueCurrentSkipped">0</strong></span>
+                    <span class="queue-status-chip muted">已中断 <strong id="queueCurrentCancelled">0</strong></span>
+                  </div>
+                  <div class="queue-status-row">
+                    <span class="queue-status-label">全部项目</span>
+                    <span class="queue-status-chip">排队中 <strong id="queueAllPending">0</strong></span>
+                    <span class="queue-status-chip danger">失败 <strong id="queueAllFailed">0</strong></span>
+                    <span class="queue-status-chip muted">已跳过 <strong id="queueAllSkipped">0</strong></span>
+                    <span class="queue-status-chip muted">已中断 <strong id="queueAllCancelled">0</strong></span>
+                  </div>
+                  <div class="queue-status-row running">
+                    <span class="queue-status-label">当前任务</span>
+                    <button id="queueRunningName" type="button" class="queue-running-pill" title="点击定位任务">空闲</button>
+                  </div>
+                </div>
+              </div>
+              <span id="queueCount" class="queue-count">0 个任务</span>
+            </div>
+            <div class="workspace3-toolbar">
+              <div class="workspace3-main-actions">
+                <button id="runAll" class="primary workspace3-runall queue-autoresume-btn" aria-pressed="false">开始执行队列</button>
+              </div>
+              <div class="workspace3-tools compact-actions workspace3-secondary-actions">
+                <button id="runFailedOnly" class="tool-btn retry-failed-btn">重试失败任务</button>
+                <button id="pauseAllTasks" class="tool-btn warning" disabled>暂停全部</button>
+                <button id="clearAllCards" class="tool-btn danger">清空卡片</button>
+              </div>
+            </div>
+
+            <div class="monitor-inline">
+              <div class="monitor-inline-head">
+                <strong>并发监测</strong>
+                <span id="w4Status" class="workspace4-status">自动监控启动中...</span>
+              </div>
+              <div class="monitor-limit-row">
+                <span>VIP组上限</span>
+                <div class="workspace4-limit-group">
+                  <button type="button" class="workspace4-limit-btn" data-w4-group="vip" data-w4-limit="1">1</button>
+                  <button type="button" class="workspace4-limit-btn" data-w4-group="vip" data-w4-limit="2">2</button>
+                  <button type="button" class="workspace4-limit-btn" data-w4-group="vip" data-w4-limit="3">3</button>
+                  <button type="button" class="workspace4-limit-btn" data-w4-group="vip" data-w4-limit="4">4</button>
+                  <button type="button" class="workspace4-limit-btn" data-w4-group="vip" data-w4-limit="5">5</button>
+                  <button type="button" class="workspace4-limit-btn" data-w4-group="vip" data-w4-limit="6">6</button>
+                  <button type="button" class="workspace4-limit-btn" data-w4-group="vip" data-w4-limit="7">7</button>
+                  <button type="button" class="workspace4-limit-btn" data-w4-group="vip" data-w4-limit="8">8</button>
+                  <button type="button" class="workspace4-limit-btn" data-w4-group="vip" data-w4-limit="9">9</button>
+                  <button type="button" class="workspace4-limit-btn" data-w4-group="vip" data-w4-limit="10">10</button>
+                </div>
+              </div>
+              <div class="monitor-total">当前生成中 <strong id="w4CurrentCount">-</strong>　·　按模型独立限额</div>
+            </div>
+
+            <div class="face-tool-shell">
+              <div class="side-tool-tabs">
+                <button id="faceToolToggle" type="button" class="tool-btn face-tool-toggle">人脸分割</button>
+                <button id="statsToolToggle" type="button" class="tool-btn stats-tool-toggle">效率统计</button>
+              </div>
+              <div id="faceToolPanel" class="face-tool-panel" hidden>
+                <div class="workspace5-body">
+                  <label>人像图（单张）
+                    <input id="faceSegImage" type="file" accept="image/*" />
+                  </label>
+
+                  <div id="faceSegStatus" class="workspace5-status">待上传人像图</div>
+
+                  <div class="workspace5-adjust" id="faceSegAdjust" style="display:none;">
+                    <div class="workspace5-adjust-title">手动圈选区域：在下方原图按住鼠标拖动可新增区域，可多次圈选</div>
+                    <div class="workspace5-tools">
+                      <button id="faceSegUndoBox" type="button" class="tool-btn">撤销上一个区域</button>
+                      <button id="faceSegClearBoxes" type="button" class="tool-btn">清空全部区域</button>
+                    </div>
+                    <div class="workspace5-canvas-wrap">
+                      <canvas id="faceSegCanvas" class="workspace5-canvas"></canvas>
+                    </div>
+                  </div>
+
+                  <div class="workspace5-result-grid">
+                    <div class="workspace5-result-card">
+                      <div class="workspace5-result-title">脸部原位切割图（下载内容）</div>
+                      <img id="faceSegFacePreview" class="workspace5-preview" alt="脸部原位切割图预览" />
+                      <div class="workspace5-seg-controls">
+                        <label class="workspace5-range-row" for="faceSegSplitDegree">
+                          <span>脸部切割程度</span>
+                          <strong id="faceSegSplitDegreeValue">50</strong>
+                        </label>
+                        <input id="faceSegSplitDegree" type="range" min="0" max="100" step="1" value="50" />
+
+                        <label class="workspace5-range-row" for="faceSegSplitSubdivide">
+                          <span>切割细分</span>
+                          <strong id="faceSegSplitSubdivideValue">+0</strong>
+                        </label>
+                        <input id="faceSegSplitSubdivide" type="range" min="-4" max="8" step="1" value="0" />
+
+                        <label class="workspace5-switch-row" for="faceSegBlurEnabled">
+                          <span>隔块模糊</span>
+                          <input id="faceSegBlurEnabled" type="checkbox" />
+                        </label>
+
+                        <label class="workspace5-range-row" for="faceSegBlurStrength">
+                          <span>模糊程度</span>
+                          <strong id="faceSegBlurStrengthValue">6</strong>
+                        </label>
+                        <input id="faceSegBlurStrength" type="range" min="0" max="20" step="1" value="6" disabled />
+                      </div>
+                    </div>
+
+                    <div class="workspace5-result-card">
+                      <div class="workspace5-result-title">去脸黑填图</div>
+                      <img id="faceSegMaskedPreview" class="workspace5-preview" alt="去脸黑填图预览" />
+                    </div>
+                  </div>
+
+                  <div class="workspace5-btn-row">
+                    <button id="faceSegDownloadFace" type="button" class="tool-btn workspace5-download-btn" disabled>下载脸部切割图</button>
+                    <button id="faceSegDownloadMasked" type="button" class="tool-btn workspace5-download-btn" disabled>下载蒙版图</button>
+                  </div>
+                  <button id="faceSegSendToW2" type="button" class="tool-btn workspace5-send-btn" disabled>发送到任务图片素材</button>
+                </div>
+              </div>
+              <div id="statsToolPanel" class="stats-tool-panel" hidden>
+                <div class="stats-panel-head">
+                  <strong>效率统计</strong>
+                  <span>只统计连续队列提交样本</span>
+                </div>
+                <div id="statsContent" class="stats-content">暂无统计数据</div>
+              </div>
+            </div>
+
+            <div class="task-search-shell">
+              <div class="task-search-box">
+                <span class="task-search-icon">⌕</span>
+                <input id="queueSearchInput" type="search" autocomplete="off" placeholder="搜索任务名 / 编号 / 提示词" />
+                <span id="queueSearchMeta" class="task-search-meta">0 个任务</span>
+                <button id="queueSearchClear" type="button" aria-label="清空搜索" hidden>&times;</button>
+              </div>
+            </div>
+
+            <div id="queueEmpty" class="queue-empty">当前项目暂无任务卡片，先在左侧设置参数后提交。</div>
+            <div id="queueCards" class="queue-cards"></div>
+          </section>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="jmFloatingComposer" class="jm-composer">
+    <div class="jm-composer-top">
+      <label class="jm-field jm-taskname-field">
+        <span class="jm-field-label">任务卡片名</span>
+        <input id="taskNameInput" class="jm-taskname" type="text" maxlength="40" placeholder="任务名(可选)" />
+      </label>
+      <label class="jm-field jm-repeat">
+        <span class="jm-field-label">次数</span>
+        <input id="taskRepeatInput" type="number" min="1" max="20" step="1" value="1" />
+      </label>
+      <span class="jm-tpl-wrap">
+        <button id="promptTplBtn" type="button" class="jm-tpl-btn" title="提示词模板">📝</button>
+        <div id="promptTplPopover" class="prompt-tpl-popover" hidden></div>
+      </span>
+      <label class="jm-seq task-number-prefix-option">
+        <input id="taskNumberPrefixToggle" type="checkbox" />
+        <span>插入序号</span>
+      </label>
+      <div class="jm-ref-group" id="jmRefGroup">
+        <div id="jmThumbStrip" class="jm-ref-thumbs" aria-label="参考素材缩略图"></div>
+        <button id="jmRefAddBtn" class="jm-ref-add" type="button" title="添加参考素材">
+          <span class="jm-ref-icon">+</span>
+          <span class="jm-ref-label">参考内容</span>
+        </button>
+        <input id="jmRefFilePicker" type="file" accept="image/*,video/mp4,audio/*" multiple style="display:none;" />
+      </div>
+      <button id="addTaskCard" class="jm-addtask-hidden" type="button" style="display:none;" aria-hidden="true">+任务添加</button>
+      <button id="promptExpandBtn" class="jm-expand-btn" type="button" title="放大编辑" aria-label="放大编辑"></button>
+    </div>
+
+    <div class="jm-composer-body">
+      <div class="jm-prompt-area">
+        <div class="prompt-highlight-shell">
+          <textarea id="promptText" class="prompt-textarea" rows="3" placeholder="上传最多12个参考素材、输入文字或 @ 参考内容，自由组合图、文、音、视频多元素。"></textarea>
+        </div>
+        <div id="promptInlineHint" class="prompt-inline-hint" style="display:none;"></div>
+        <div id="atDropdown" class="at-dropdown" style="display:none;"></div>
+        <div id="promptRefSummary" class="prompt-ref-summary" hidden></div>
+      </div>
+    </div>
+
+    <div class="jm-composer-bar">
+      <div class="jm-chips">
+        <label class="jm-chip jm-chip-locked" title="创作模式（锁定视频生成）">
+          <span class="jm-chip-icon">🎬</span><span>视频生成</span>
+          <select id="genMode" class="jm-hidden-field">
+            <option value="视频生成" selected>视频生成</option>
+          </select>
+        </label>
+        <div class="jm-chip jm-ratio-chip jm-combo-chip" title="视频模型">
+          <button id="modelComboBtn" type="button" class="jm-ratio-btn">
+            <span class="jm-chip-icon">⭐</span><span id="jmModelChipLabel">Seedance 2.5</span> <span class="jm-caret">▾</span>
+          </button>
+          <div id="modelPopover" class="jm-popover jm-combo-pop" hidden>
+            <div class="jm-pop-sec"><div class="jm-pop-opts" data-group="model"></div></div>
+          </div>
+          <select id="model" class="jm-hidden-field">
+            <option value="Seedance 2.5" selected>Seedance 2.5</option>
+            <option value="Seedance 2.0 mini">Seedance 2.0 mini</option>
+            <option value="Seedance 2.0 Fast VIP">Seedance 2.0 Fast VIP</option>
+            <option value="Seedance 2.0 VIP">Seedance 2.0 VIP</option>
+            <option value="Seedance 2.0 Fast">Seedance 2.0 Fast</option>
+            <option value="Seedance 2.0">Seedance 2.0</option>
+            <option value="Seedance 1.5 Pro">Seedance 1.5 Pro</option>
+            <option value="Seedance 1.0">Seedance 1.0</option>
+            <option value="Seedance 1.0 Fast">Seedance 1.0 Fast</option>
+          </select>
+        </div>
+        <div class="jm-chip jm-ratio-chip jm-combo-chip" title="参考模式">
+          <button id="refModeComboBtn" type="button" class="jm-ratio-btn">
+            <span class="jm-chip-icon">⚙</span><span id="jmRefModeChipLabel">全能参考</span> <span class="jm-caret">▾</span>
+          </button>
+          <div id="refModePopover" class="jm-popover jm-combo-pop" hidden>
+            <div class="jm-pop-sec"><div class="jm-pop-opts" data-group="refMode"></div></div>
+          </div>
+          <select id="refMode" class="jm-hidden-field">
+            <option value="全能参考" selected>全能参考</option>
+            <option value="首尾帧">首尾帧</option>
+            <option value="超长视频">超长视频</option>
+          </select>
+        </div>
+        <div class="jm-chip jm-ratio-chip">
+          <button id="ratioComboBtn" type="button" class="jm-ratio-btn">▭ 21:9 · 480P · 1个 <span class="jm-caret">▾</span></button>
+          <div id="ratioPopover" class="jm-popover" hidden>
+            <div class="jm-pop-sec">
+              <div class="jm-pop-title">选择比例</div>
+              <div class="jm-pop-opts" data-group="ratio">
+                <button type="button" data-val="21:9" class="on">21:9</button>
+                <button type="button" data-val="16:9">16:9</button>
+                <button type="button" data-val="4:3">4:3</button>
+                <button type="button" data-val="1:1">1:1</button>
+                <button type="button" data-val="3:4">3:4</button>
+                <button type="button" data-val="9:16">9:16</button>
+              </div>
+            </div>
+            <div class="jm-pop-sec">
+              <div class="jm-pop-title">选择分辨率</div>
+              <div class="jm-pop-opts" data-group="resolution">
+                <button type="button" data-val="480P" class="on">480P</button>
+                <button type="button" data-val="720P">720P</button>
+                <button type="button" data-val="1080P">1080P</button>
+                <button type="button" data-val="4K">4K</button>
+              </div>
+            </div>
+            <div class="jm-pop-sec">
+              <div class="jm-pop-title">选择生成数量</div>
+              <div class="jm-pop-opts" data-group="count">
+                <button type="button" data-val="1" class="on">1</button>
+                <button type="button" data-val="2">2</button>
+                <button type="button" data-val="3">3</button>
+                <button type="button" data-val="4">4</button>
+              </div>
+            </div>
+          </div>
+          <select id="ratio" class="jm-hidden-field">
+            <option value="1:1">1:1</option>
+            <option value="16:9">16:9</option>
+            <option value="21:9" selected>21:9</option>
+            <option value="9:16">9:16</option>
+            <option value="4:3">4:3</option>
+            <option value="3:4">3:4</option>
+          </select>
+          <input type="hidden" id="resolution" value="480P" />
+          <input type="hidden" id="genCount" value="1" />
+        </div>
+        <div class="jm-chip jm-ratio-chip jm-combo-chip" title="视频时长">
+          <button id="durationComboBtn" type="button" class="jm-ratio-btn">
+            <span class="jm-chip-icon">⏱</span><span id="jmDurationChipLabel">5s</span> <span class="jm-caret">▾</span>
+          </button>
+          <div id="durationPopover" class="jm-popover jm-duration-pop" hidden>
+            <div class="jm-duration-panel">
+              <div class="jm-duration-title">选择视频生成时长</div>
+              <div class="jm-duration-control">
+                <div class="jm-duration-slider-wrap">
+                  <div class="jm-duration-rail" aria-hidden="true">
+                    <div class="jm-duration-fill"></div>
+                    <div id="durationRailTicks" class="jm-duration-rail-ticks"></div>
+                  </div>
+                  <input id="durationSlider" class="jm-duration-slider" type="range" min="0" max="0" step="1" value="0" aria-label="选择视频生成时长" />
+                  <div id="durationTicks" class="jm-duration-ticks"></div>
+                </div>
+                <div id="durationValue" class="jm-duration-value">
+                  <input id="durationNumber" type="number" inputmode="numeric" value="5" aria-label="视频生成时长（秒）" />
+                  <span>s</span>
+                  <div class="jm-duration-stepper-controls">
+                    <button id="durationIncrease" type="button" class="jm-duration-stepper-up" title="增加时长" aria-label="增加时长"></button>
+                    <button id="durationDecrease" type="button" class="jm-duration-stepper-down" title="减少时长" aria-label="减少时长"></button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <select id="duration" class="jm-hidden-field">
+            <option value="4s">4s</option><option value="5s" selected>5s</option>
+            <option value="6s">6s</option><option value="7s">7s</option>
+            <option value="8s">8s</option><option value="9s">9s</option>
+            <option value="10s">10s</option><option value="11s">11s</option>
+            <option value="12s">12s</option><option value="13s">13s</option>
+            <option value="14s">14s</option><option value="15s">15s</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="jm-submit-area">
+        <span id="promptCharCount" class="jm-char-count" title="提示词字数 / 上限">0/3950</span>
+        <button id="jmSubmitBtn" class="jm-submit-arrow" type="button" title="提交到队列" aria-label="提交到队列"></button>
+      </div>
+    </div>
+
+    <!-- 隐藏的兼容文件输入 + #mediaChips（ui-enhancements.js 的 @ 下拉 fallback 数据源）-->
+    <input id="imageFiles" type="file" accept="image/*" multiple style="display:none;" />
+    <input id="videoFiles" type="file" accept="video/mp4" multiple style="display:none;" />
+    <input id="audioFiles" type="file" accept="audio/*" multiple style="display:none;" />
+    <div id="mediaChips" class="media-chips" style="display:none;"></div>
+    <div id="uploadSummary" class="upload-summary" style="display:none;"></div>
+    <div id="uploadError" class="upload-error" style="display:none;"></div>
+    <div id="imagePreviewGrid" style="display:none;"></div>
+    <div id="videoFileList" style="display:none;"></div>
+    <div id="audioFileList" style="display:none;"></div>
+  </div>
+
+  <div id="projectManagerModal" class="project-manager-modal" hidden>
+    <div class="project-manager-panel" role="dialog" aria-modal="true" aria-labelledby="projectManagerTitle">
+      <div class="project-manager-modal-head">
+        <div>
+          <strong id="projectManagerTitle">项目管理</strong>
+          <span>整理项目、归档项目，并按项目导入导出表格包</span>
+        </div>
+        <button id="projectManagerClose" class="project-manager-close" type="button" aria-label="关闭">×</button>
+      </div>
+      <div class="project-manager-toolbar">
+        <button id="exportTasksCsv" class="tool-btn" type="button" title="导入说明&#10;1) 请把任务所需素材都放在同一个根文件夹内（可有子文件夹）。&#10;2) 编辑 tasks.csv 时，建议保留全部列名。&#10;3) 必填列：创作模式、模型、参考模式、比例、时长、提示词。&#10;4) 图片文件名/视频文件名/音频文件名 填素材名（不带后缀），多个可用 ; 或 ； 分隔。&#10;5) 序号(ID)/创建时间/状态 可不改；其他按需修改。&#10;6) 导入 CSV 时，插件会先让你选择素材根目录，再按相对路径或素材名自动匹配文件。&#10;注意事项A：保存表格时弹窗不用管换XLSX格式，直接点保存。&#10;注意事项B：表格里显示的比例为16：09不用管没事，换也直接写比如21:9。&#10;注意事项C：导入表格到插件有素材会弹窗选择目录，有时弹窗不出来，再加载一次表格。&#10;做好备份">导出当前项目CSV</button>
+        <button id="exportTasks" class="tool-btn" type="button">导出当前项目ZIP包</button>
+        <button id="importTasks" class="tool-btn" type="button">导入表格（CSV/ZIP）</button>
+        <input id="importTasksFile" type="file" accept=".zip,.csv,.json" style="display:none;" />
+        <input id="importMediaRootFolder" type="file" webkitdirectory multiple style="display:none;" />
+      </div>
+      <div id="importMediaPending" class="project-import-media-pending" hidden aria-live="polite">
+        <span id="importMediaPendingText"></span>
+        <div class="project-import-media-actions">
+          <button id="chooseImportMediaRoot" class="tool-btn" type="button">选择素材目录</button>
+          <button id="importCsvWithoutMedia" class="tool-btn" type="button">跳过素材导入</button>
+          <button id="cancelPendingCsvImport" class="tool-btn danger" type="button">取消本次导入</button>
+        </div>
+      </div>
+      <div id="projectManagerList" class="project-manager-list" aria-label="全部项目列表"></div>
+    </div>
+  </div>
+
+  <div id="projectMaterialModal" class="project-manager-modal" hidden>
+    <div class="project-manager-panel" role="dialog" aria-modal="true" aria-labelledby="projectMaterialTitle">
+      <div class="project-manager-modal-head">
+        <div>
+          <strong id="projectMaterialTitle">项目素材</strong>
+          <span>给项目预存图片/视频/音频，提示词里 @ 引用时自动加入下方素材区（同名以下方上传为准）</span>
+        </div>
+        <button id="projectMaterialClose" class="project-manager-close" type="button" aria-label="关闭">×</button>
+      </div>
+      <div class="project-material-body">
+        <div class="project-material-topline">
+          <label class="project-material-upload" style="cursor:pointer;">
+            <span class="project-material-upload-icon">+</span>
+            <span class="project-material-upload-copy">
+              <strong>添加素材</strong>
+              <em>图片 / MP4 / 音频，可多选</em>
+            </span>
+            <input id="projectMaterialAddInput" type="file" accept="image/*,video/mp4,audio/*" multiple style="display:none;" />
+          </label>
+          <div id="projectMaterialStats" class="project-material-stats" aria-label="项目素材统计"></div>
+        </div>
+        <div id="projectMaterialList" class="project-material-list" aria-label="项目素材列表"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+  <script src="vendor/codemirror/codemirror.js"></script>
+  <div id="promptEditorModal" class="prompt-editor-modal" hidden>
+    <div class="prompt-editor-panel" role="dialog" aria-modal="true" aria-labelledby="promptEditorTitle">
+      <div class="prompt-editor-head">
+        <strong id="promptEditorTitle">提示词放大编辑</strong>
+      </div>
+      <div id="promptEditorMount" class="prompt-editor-mount"></div>
+      <div class="prompt-editor-actions">
+        <button id="promptTplSaveBtn" class="prompt-editor-secondary" type="button">保存提示词</button>
+        <button id="promptEditorCancel" class="prompt-editor-primary" type="button">关闭</button>
+      </div>
+    </div>
+  </div>
+  <script src="ui-enhancements.js"></script>
+</body>
+</html>
